@@ -18,7 +18,8 @@ The physical + cloud stuff that makes big models possible.
 **PM-level understanding:**
 
 - Training huge base models is something only big labs/clouds do.
-- You will mostly care about **inference infrastructure**: latency, throughput, cost, reliability (SLOs).
+- PM cares about **inference infrastructure**: This is where latency, reliability, and cost per request come from.
+- You don’t manage GPUs, but you choose deployment shape (hosted API vs self-hosted, small vs big model).
 
 ---
 
@@ -55,6 +56,7 @@ This is the “brain design.”
 
 **PM-level understanding:**
 
+- This explains context limits and why long prompts are expensive. You think in tokens, context sizes, and “what really needs to be in the prompt”.
 - More parameters/context generally = smarter but slower/more expensive.
 - The **context window** is a hard constraint → why you need RAG, summarization, etc.
 
@@ -73,7 +75,8 @@ This is taking the raw transformer and making it not-insane and more “helpful.
 
 **PM-level understanding:**
 
-- You don’t run this, but:
+- PM's don’t need to run this, but:
+    - Different vendors/models behave differently because of alignment.
     - Models differ in **helpfulness**, **safety**, **coding skill**, etc. because of how they were aligned.
     - Your choice of model family matters for UX and risk (e.g. code-heavy vs general chat vs small on-device).
 
@@ -81,7 +84,7 @@ This is taking the raw transformer and making it not-insane and more “helpful.
 
 ## **Layer 5 – Adaptation to Your Use Case (Prompts & Fine-tuning)**
 
-This is where your product’s needs come in.
+This is where your product’s needs come in. This is exactly where you specialize a general model for your product.
 
 **Key concepts:**
 
@@ -121,7 +124,9 @@ This is the “LLM + your data + your systems” layer.
 **PM-level understanding:**
 
 - RAG is the default way to connect the model to your private and frequently-changing data.
+- This is where you answer “How does the AI know our stuff?” and “How does it do things (not just talk)?”. You design data sources, retrieval strategy, and tool specs.
 - You design: what data to ingest, how to chunk, what metadata, what sources to show to users.
+
 
 ### **6b. Tools & External Systems**
 
@@ -156,6 +161,7 @@ Above single calls, you get **flows** and **pipelines**.
 
 - When you describe “the feature flow,” engineers will implement it as a chain/workflow.
 - You decide: where humans step in, where to log decisions, where to add approvals.
+- In other words, this mirrors your user flow diagrams. Your product spec (“first classify, then fetch docs, then draft answer, then summarize”) becomes a machine-readable workflow
 
 ---
 
@@ -185,6 +191,7 @@ An **agent** is an LLM loop that:
 **PM-level understanding:**
 
 - An “agent” isn’t magic – it’s just an LLM + tools + loop + state.
+- This is “one smart worker” in your product. You define what it’s allowed to do, what tools it has, and when it should escalate to a human.
 - You define:
     - What tools it has.
     - What tasks it’s allowed to do.
@@ -235,6 +242,7 @@ Instead of one big “do-everything agent,” we have specialized ones, e.g.:
     - You want redundancy/quality via multiple opinions.
 - They also add complexity: latency, logging, debugging, costs.
 - As PM, you’d decide: “Do we really need many agents, or is one carefully-designed agent + tools enough?”
+- You only go here when the task is complex enough to benefit from specialization and redundancy. You weigh added complexity vs gains in quality and robustness.
 
 ---
 
